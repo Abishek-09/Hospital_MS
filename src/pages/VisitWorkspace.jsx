@@ -848,78 +848,98 @@ export default function VisitWorkspace() {
 
               <div className="space-y-3">
                 {invoiceItems.map((item) => (
-                  <div key={item.id} className="flex flex-wrap sm:flex-nowrap gap-3 items-center mb-3">
-                    <input
-                      type="text"
-                      disabled={isInvoiceIssued}
-                      value={item.description}
-                      onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
-                      placeholder="Item description"
-                      className="flex-1 min-w-[150px] px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100 font-medium"
-                    />
-
-                    {/* Type selector */}
-                    <select
-                      disabled={isInvoiceIssued}
-                      value={item.type}
-                      onChange={(e) => handleItemChange(item.id, 'type', e.target.value)}
-                      className="w-32 px-3 py-2 text-sm border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100"
-                    >
-                      <option value="Consultation">Consultation</option>
-                      <option value="Medicine">Medicine</option>
-                      <option value="Procedure">Procedure</option>
-                      <option value="Vaccination">Vaccination</option>
-                    </select>
-
-                    {/* Amount in Rupees */}
-                    <div className="relative w-24 shrink-0">
-                      <span className="absolute left-2.5 top-2 text-sm text-slate-400">₹</span>
+                  <div 
+                    key={item.id} 
+                    className="flex flex-col md:flex-row gap-3 mb-3 p-3 md:p-0 bg-slate-50 md:bg-transparent rounded-lg border border-slate-200 md:border-transparent relative"
+                  >
+                    {/* 1. Search Input (Full width on mobile) */}
+                    <div className="relative flex-1 w-full">
                       <input
-                        type="number"
+                        type="text"
                         disabled={isInvoiceIssued}
-                        value={paiseToRupees(item.amountPaise)}
-                        onChange={(e) => handleItemChange(item.id, 'amountRupees', e.target.value)}
-                        className="w-full pl-6 pr-2 py-2 text-sm font-bold text-right border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100 text-slate-800"
+                        value={item.description}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          handleItemChange(item.id, 'description', val);
+                          const isSyrup = /syrup|suspension/i.test(val);
+                          if (isSyrup) handleItemChange(item.id, 'type', 'Syrup');
+                        }}
+                        placeholder="Item description (e.g. Paracetamol Syrup)..."
+                        className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100 font-medium"
                       />
                     </div>
 
-                    {!isInvoiceIssued && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveInvoiceItem(item.id)}
-                        disabled={invoiceItems.length === 1}
-                        className="p-1.5 text-slate-400 hover:text-red-500 disabled:opacity-20 transition-colors shrink-0"
-                        title="Delete item"
+                    {/* 2. Type & Amount & Trash (Grid on mobile, Flex on desktop) */}
+                    <div className="grid grid-cols-[1fr_1fr_auto] md:flex gap-3 items-center w-full md:w-auto">
+                      <select
+                        disabled={isInvoiceIssued}
+                        value={item.type === 'Syrup' ? 'Syrup' : 'Medicine'}
+                        onChange={(e) => handleItemChange(item.id, 'type', e.target.value)}
+                        className="w-full md:w-32 px-3 py-2 text-sm border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100 font-medium cursor-pointer"
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                        <option value="Medicine">Medicine</option>
+                        <option value="Syrup">Syrup</option>
+                      </select>
+
+                      <div className="relative w-full md:w-36">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 select-none pointer-events-none">
+                          ₹
+                        </span>
+                        <input
+                          type="number"
+                          disabled={isInvoiceIssued}
+                          value={paiseToRupees(item.amountPaise)}
+                          onChange={(e) => handleItemChange(item.id, 'amountRupees', e.target.value)}
+                          className="w-full pl-7 pr-11 py-2 text-sm font-bold text-right border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100 text-slate-800"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 uppercase select-none pointer-events-none">
+                          {item.type === 'Syrup' ? 'ml' : 'qty'}
+                        </span>
+                      </div>
+
+                      {!isInvoiceIssued && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveInvoiceItem(item.id)}
+                          disabled={invoiceItems.length === 1}
+                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors disabled:opacity-20 shrink-0 justify-self-end md:justify-self-auto"
+                          title="Delete item"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Discount & Tax Options */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2 pt-4 border-t border-slate-200">
+            {/* Discount & Tax Options: Footer Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 mt-4 border-t border-slate-200">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
                   Bill-Level Discount
                 </label>
                 <div className="flex gap-2">
-                  <input
-                    type="number"
-                    disabled={isInvoiceIssued}
-                    min="0"
-                    value={discountValue}
-                    onChange={(e) => setDiscountValue(e.target.value)}
-                    placeholder="0"
-                    className="w-24 px-3 py-2 text-sm border border-slate-300 rounded-md text-right font-medium focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100"
-                  />
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400">
+                      {discountType === 'flat' ? '₹' : '%'}
+                    </span>
+                    <input
+                      type="number"
+                      disabled={isInvoiceIssued}
+                      min="0"
+                      value={discountValue}
+                      onChange={(e) => setDiscountValue(e.target.value)}
+                      placeholder="0"
+                      className="w-full pl-7 pr-3 py-2 text-sm border border-slate-300 rounded-md text-right font-medium focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100"
+                    />
+                  </div>
                   <select
                     disabled={isInvoiceIssued}
                     value={discountType}
                     onChange={(e) => setDiscountType(e.target.value)}
-                    className="px-3 py-2 text-sm border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100 font-medium"
+                    className="w-32 px-3 py-2 text-sm border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100 font-medium cursor-pointer"
                   >
                     <option value="flat">₹ Flat</option>
                     <option value="percent">% Percent</option>
@@ -932,16 +952,21 @@ export default function VisitWorkspace() {
                   Tax Configuration
                 </label>
                 <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    disabled={isInvoiceIssued}
-                    min="0"
-                    max="100"
-                    value={taxPercent}
-                    onChange={(e) => setTaxPercent(e.target.value)}
-                    className="w-20 px-3 py-2 text-sm border border-slate-300 rounded-md text-right font-medium focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100"
-                  />
-                  <span className="text-xs text-slate-500 font-medium">% (Default: 0%)</span>
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                      disabled={isInvoiceIssued}
+                      min="0"
+                      max="100"
+                      value={taxPercent}
+                      onChange={(e) => setTaxPercent(e.target.value)}
+                      className="w-full pr-8 pl-3 py-2 text-sm border border-slate-300 rounded-md text-right font-medium focus:outline-none focus:ring-2 focus:ring-[#416B66] disabled:bg-slate-100"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400">
+                      %
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-500 font-medium whitespace-nowrap">(Default: 0%)</span>
                 </div>
               </div>
             </div>
