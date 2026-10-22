@@ -59,4 +59,28 @@ test.describe('Suite 4: Responsive Mobile Testing (Crucial)', () => {
     });
     expect(isOverflowing).toBe(false);
   });
+
+  test('Mobile Header: Remains stationary/sticky at top when scrolling down the page', async ({ page }) => {
+    await page.goto('/admin/workspace?patientId=SCC-P1001');
+
+    const mobileHeader = page.locator('[data-testid="mobile-header"]');
+    await expect(mobileHeader).toBeVisible();
+
+    // Verify initial position at top of viewport
+    const initialBox = await mobileHeader.boundingBox();
+    expect(initialBox).not.toBeNull();
+    expect(initialBox.y).toBe(0);
+
+    // Scroll down the scrollable page content
+    const scrollContainer = page.locator('.custom-scrollbar').first();
+    await scrollContainer.evaluate((el) => {
+      el.scrollTop = 400;
+    });
+
+    // Verify header remains visible and pinned at top (y === 0)
+    await expect(mobileHeader).toBeVisible();
+    const scrolledBox = await mobileHeader.boundingBox();
+    expect(scrolledBox).not.toBeNull();
+    expect(scrolledBox.y).toBe(0);
+  });
 });

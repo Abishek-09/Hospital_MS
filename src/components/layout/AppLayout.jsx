@@ -75,11 +75,12 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
 
   return (
     // Main wrapper
-    <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
+    <div className="flex h-screen h-[100dvh] max-h-[100dvh] bg-slate-50 overflow-hidden font-sans">
 
       {/* 1. MOBILE SIDEBAR OVERLAY (Backdrop) */}
       {isSidebarOpen && (
         <div
+          data-testid="sidebar-backdrop"
           className="fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ease-in-out"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -168,18 +169,6 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
               </NavLink>
             );
           })}
-
-          {/* Quick Sign Out item inside nav list on mobile */}
-          <div className="pt-2 mt-2 border-t border-white/10 md:hidden">
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-300 hover:text-white hover:bg-red-500/20 transition-all duration-200 group"
-            >
-              <LogOut className="w-4 h-4 text-red-400 group-hover:text-white transition-transform group-hover:scale-110" />
-              <span className="flex-1 text-left truncate">{isAdmin ? 'Doctor Sign Out' : 'Reception Sign Out'}</span>
-            </button>
-          </div>
         </nav>
 
         {/* Sidebar Footer & Sign Out (Sticky/pinned at bottom of sidebar) */}
@@ -206,10 +195,13 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
       </aside>
 
       {/* 3. MAIN CONTENT AREA */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 h-full max-h-[100dvh] overflow-hidden">
 
-        {/* MOBILE HEADER (Hamburger Menu & Direct Quick Sign Out) */}
-        <header className="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-200 shadow-sm shrink-0 z-30">
+        {/* MOBILE HEADER (Hamburger Menu & Direct Quick Sign Out - Sticky/Pinned at top) */}
+        <header 
+          data-testid="mobile-header"
+          className="md:hidden sticky top-0 z-30 w-full flex items-center justify-between p-4 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-xs shrink-0"
+        >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#2A4343] text-white flex items-center justify-center font-bold shrink-0">
               <HeartHandshake className="w-5 h-5 text-[#F1D49A]" />
