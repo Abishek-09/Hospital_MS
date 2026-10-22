@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   Users, 
@@ -17,7 +17,8 @@ import {
   ArrowRight,
   ShieldCheck,
   FileText,
-  AlertCircle
+  AlertCircle,
+  X
 } from 'lucide-react';
 import { getPatients, getVisitsForPatient, getInvoices, getClinicSettings } from '../../services/storage';
 import { formatDate, getPatientAgeDisplay } from '../../utils/date';
@@ -35,6 +36,19 @@ export default function AdminPatientHistory() {
   const [patientHistory, setPatientHistory] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [searchFilter, setSearchFilter] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchContainerRef = useRef(null);
+
+  // Close search dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Print Modals
   const [selectedVisitForPrint, setSelectedVisitForPrint] = useState(null);
@@ -133,48 +147,69 @@ export default function AdminPatientHistory() {
         </div>
       </div>
 
-      {/* Patient Queue Horizontal Quick Strip */}
-      <div className="bg-white rounded-2xl p-3 border border-brand-border/70 shadow-soft">
-        <div className="flex items-center justify-between gap-3 mb-2 px-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
-            <Users className="w-3.5 h-3.5 text-brand-teal" />
-            <span>Select Patient to Inspect History:</span>
-          </span>
-          <div className="relative w-48 sm:w-60">
-            <Search className="w-3 h-3 absolute left-2.5 top-2 text-stone-400" />
-            <input
-              type="text"
-              placeholder="Search child or phone..."
-              value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
-              className="w-full pl-7 pr-2.5 py-1 text-[11px] rounded-lg border border-stone-200 bg-stone-50 focus:outline-none focus:border-brand-teal"
-            />
-          </div>
-        </div>
+      {/* Patient Search Bar (Keep only search box) */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3.5">
+        <div ref={searchContainerRef} className="relative w-full">
+          <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search child by name (or தமிழ்), phone number, or ID to inspect history..."
+            value={searchFilter}
+            onChange={(e) => {
+              setSearchFilter(e.target.value);
+              setIsSearchOpen(true);
+            }}
+            onFocus={() => setIsSearchOpen(true)}
+            className="w-full pl-10 pr-9 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#416B66] bg-slate-50 focus:bg-white transition-all font-medium text-slate-800"
+          />
+          {searchFilter && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchFilter('');
+                setIsSearchOpen(false);
+              }}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 p-0.5 rounded-full"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-          {filteredPatients.map(p => {
-            const isSelected = selectedPatient?.id === p.id;
-            const sexBadge = p.sex ? String(p.sex)[0] : 'C';
-            const phoneStr = p.phone ? String(p.phone) : '';
-            const phoneBadge = phoneStr.length >= 4 ? phoneStr.slice(-4) : phoneStr;
-            return (
-              <button
-                key={p.id}
-                onClick={() => handleSelectPatient(p)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all shrink-0 border ${
-                  isSelected
-                    ? 'bg-brand-dark text-white border-brand-dark shadow-soft'
-                    : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-brand-sage-subtle'
-                }`}
-              >
-                <span className="font-bold">{p.name}</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${isSelected ? 'bg-white/20 text-brand-sand' : 'bg-stone-200 text-stone-600'}`}>
-                  {sexBadge} • {phoneBadge}
-                </span>
-              </button>
-            );
-          })}
+          {/* Autocomplete Results Dropdown */}
+          {isSearchOpen && searchFilter.trim() && (
+            <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-xl border border-slate-200 shadow-lg z-40 max-h-64 overflow-y-auto divide-y divide-slate-100">
+              {filteredPatients.length > 0 ? (
+                filteredPatients.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => {
+                      handleSelectPatient(p);
+                      setSearchFilter('');
+                      setIsSearchOpen(false);
+                    }}
+                    className="w-full px-4 py-2.5 text-left hover:bg-slate-50 flex items-center justify-between text-xs transition-colors group"
+                  >
+                    <div>
+                      <span className="font-bold text-slate-800 group-hover:text-[#416B66]">
+                        {p.name}
+                      </span>
+                      <span className="text-[11px] text-slate-500 ml-2 font-mono">
+                        {p.phone}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono bg-slate-100 group-hover:bg-[#416B66]/10 px-2 py-0.5 rounded text-slate-600 font-bold">
+                      {p.id}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="p-3 text-center text-xs text-slate-400">
+                  No patient found matching "{searchFilter}"
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

@@ -86,13 +86,15 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
       )}
 
       {/* 2. SIDEBAR (Off-canvas on mobile, static on desktop) */}
-      <aside className={`
+      <aside 
+        data-testid="app-sidebar"
+        className={`
         fixed inset-y-0 left-0 z-50 w-72 bg-[#2A4343] text-white transform transition-transform duration-300 ease-in-out
-        md:static md:translate-x-0 md:w-64 flex flex-col shrink-0 min-h-screen select-none shadow-xl md:shadow-none
+        md:static md:translate-x-0 md:w-64 flex flex-col shrink-0 h-full max-h-screen max-h-[100dvh] overflow-hidden select-none shadow-xl md:shadow-none
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         {/* Sidebar Header & Brand Logo */}
-        <div className="p-5 border-b border-white/10 bg-black/10 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-white/10 bg-black/10 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#416B66] to-[#C0C29D] flex items-center justify-center shadow-lg text-[#2A4343] shrink-0 font-bold">
               <HeartHandshake className="w-6 h-6 text-[#2A4343]" />
@@ -119,7 +121,7 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
         </div>
 
         {/* Role Badge Card */}
-        <div className="px-4 py-3 bg-white/5 border-b border-white/10">
+        <div className="px-4 py-2.5 sm:py-3 bg-white/5 border-b border-white/10 shrink-0">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-white tracking-wide">
               {isAdmin ? (clinicSettings.doctorName || 'Dr. B. Sivakumar') : 'Front Desk Reception'}
@@ -138,8 +140,8 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
           </span>
         </div>
 
-        {/* Navigation Menu Links */}
-        <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto custom-scrollbar">
+        {/* Navigation Menu Links (min-h-0 allows shrinking so footer remains pinned) */}
+        <nav className="flex-1 min-h-0 p-3 sm:p-3.5 space-y-1 overflow-y-auto custom-scrollbar">
           <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-300">
             {isAdmin ? 'Doctor Workspace' : 'Front Desk Operations'}
           </div>
@@ -166,25 +168,38 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
               </NavLink>
             );
           })}
+
+          {/* Quick Sign Out item inside nav list on mobile */}
+          <div className="pt-2 mt-2 border-t border-white/10 md:hidden">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-300 hover:text-white hover:bg-red-500/20 transition-all duration-200 group"
+            >
+              <LogOut className="w-4 h-4 text-red-400 group-hover:text-white transition-transform group-hover:scale-110" />
+              <span className="flex-1 text-left truncate">{isAdmin ? 'Doctor Sign Out' : 'Reception Sign Out'}</span>
+            </button>
+          </div>
         </nav>
 
-        {/* Sidebar Footer & Sign Out */}
-        <div className="p-4 border-t border-white/10 bg-black/15 text-[11px] space-y-2.5 text-slate-300 shrink-0">
-          <div className="flex items-center gap-2 text-[#F1D49A] font-medium">
-            <Clock className="w-3.5 h-3.5 text-[#F1D49A]" />
-            <span>Timing: {clinicSettings.timings || '1:00 PM – 9:00 PM'}</span>
+        {/* Sidebar Footer & Sign Out (Sticky/pinned at bottom of sidebar) */}
+        <div className="p-3.5 border-t border-white/10 bg-black/25 text-[11px] space-y-2 text-slate-300 shrink-0">
+          <div className="flex items-center gap-2 text-[#F1D49A] font-medium text-[11px]">
+            <Clock className="w-3.5 h-3.5 text-[#F1D49A] shrink-0" />
+            <span className="truncate">Timing: {clinicSettings.timings || '1:00 PM – 9:00 PM'}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <PhoneCall className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex items-center gap-2 text-[11px]">
+            <PhoneCall className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span>{clinicSettings.phone || '8300 44 2584'}</span>
           </div>
 
           <button
             type="button"
+            data-testid="sidebar-logout-btn"
             onClick={handleLogout}
-            className="w-full mt-2 py-2 px-3 rounded-xl bg-white/5 hover:bg-red-500/20 text-slate-200 hover:text-red-300 border border-white/10 transition-colors flex items-center justify-center gap-2 font-semibold text-xs"
+            className="w-full mt-1.5 py-2.5 px-3 rounded-xl bg-red-500/20 hover:bg-red-600 text-red-200 hover:text-white border border-red-500/40 transition-colors flex items-center justify-center gap-2 font-bold text-xs shadow-xs cursor-pointer"
           >
-            <LogOut className="w-3.5 h-3.5" />
+            <LogOut className="w-4 h-4 shrink-0" />
             <span>{isAdmin ? 'Doctor Sign Out' : 'Reception Sign Out'}</span>
           </button>
         </div>
@@ -193,7 +208,7 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
       {/* 3. MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        {/* MOBILE HEADER (Hamburger Menu) */}
+        {/* MOBILE HEADER (Hamburger Menu & Direct Quick Sign Out) */}
         <header className="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-200 shadow-sm shrink-0 z-30">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#2A4343] text-white flex items-center justify-center font-bold shrink-0">
@@ -209,14 +224,26 @@ export default function AppLayout({ children, role = 'admin', customNavItems = n
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsSidebarOpen(true)}
-            className="p-2 text-slate-600 hover:text-[#2A4343] hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
-            aria-label="Open Navigation Menu"
-          >
-            <Menu size={24} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-slate-200"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut size={18} />
+            </button>
+            <button
+              type="button"
+              data-testid="mobile-menu-btn"
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 text-slate-600 hover:text-[#2A4343] hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
+              aria-label="Open Navigation Menu"
+            >
+              <Menu size={22} />
+            </button>
+          </div>
         </header>
 
         {/* DESKTOP TOPBAR */}
