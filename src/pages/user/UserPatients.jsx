@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Users, 
-  Search, 
-  UserPlus, 
-  Edit3, 
-  Trash2, 
-  Phone, 
-  User, 
-  ArrowRight, 
-  ClipboardList, 
+import {
+  Users,
+  Search,
+  UserPlus,
+  Edit3,
+  Trash2,
+  Phone,
+  User,
+  ArrowRight,
+  ClipboardList,
   X,
   AlertTriangle,
   CheckCircle2
@@ -279,9 +279,8 @@ export default function UserPatients() {
                     placeholder="e.g. Aarav Kumar or ஆரவ் குமார்"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full pl-10 pr-4 py-2 text-xs font-semibold rounded-xl border focus:outline-none focus:ring-2 focus:ring-brand-teal/30 ${
-                      formErrors.name ? 'border-red-400 bg-red-50/30' : 'border-stone-300 focus:border-brand-teal'
-                    }`}
+                    className={`w-full pl-10 pr-4 py-2 text-xs font-semibold rounded-xl border focus:outline-none focus:ring-2 focus:ring-brand-teal/30 ${formErrors.name ? 'border-red-400 bg-red-50/30' : 'border-stone-300 focus:border-brand-teal'
+                      }`}
                   />
                 </div>
                 {formErrors.name && <p className="text-xs text-red-600 mt-1">{formErrors.name}</p>}
@@ -300,9 +299,8 @@ export default function UserPatients() {
                     placeholder="10-digit parent mobile"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
-                    className={`w-full pl-10 pr-4 py-2 text-xs font-semibold rounded-xl border focus:outline-none focus:ring-2 focus:ring-brand-teal/30 ${
-                      formErrors.phone ? 'border-red-400 bg-red-50/30' : 'border-stone-300 focus:border-brand-teal'
-                    }`}
+                    className={`w-full pl-10 pr-4 py-2 text-xs font-semibold rounded-xl border focus:outline-none focus:ring-2 focus:ring-brand-teal/30 ${formErrors.phone ? 'border-red-400 bg-red-50/30' : 'border-stone-300 focus:border-brand-teal'
+                      }`}
                   />
                 </div>
                 {formErrors.phone && <p className="text-xs text-red-600 mt-1">{formErrors.phone}</p>}

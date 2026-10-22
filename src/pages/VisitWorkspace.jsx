@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { 
-  Users, 
-  Stethoscope, 
-  Plus, 
-  Trash2, 
-  Printer, 
-  Save, 
-  CheckCircle, 
-  Clock, 
-  AlertCircle, 
-  RotateCcw, 
-  IndianRupee, 
+import {
+  Users,
+  Stethoscope,
+  Plus,
+  Trash2,
+  Printer,
+  Save,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  RotateCcw,
+  IndianRupee,
   Sparkles,
   ChevronDown,
   ChevronRight,
@@ -24,11 +24,11 @@ import {
   UserPlus,
   X
 } from 'lucide-react';
-import { 
-  getPatients, 
-  getVisitsForPatient, 
+import {
+  getPatients,
+  getVisitsForPatient,
   getPatientById,
-  saveVisit, 
+  saveVisit,
   getInvoiceByVisitId,
   saveInvoice,
   issueInvoice,
@@ -714,7 +714,7 @@ export default function VisitWorkspace() {
             <div className="max-h-60 overflow-y-auto pr-1 space-y-4">
               {patientHistory.length > 0 ? (
                 patientHistory.map((pastVisit) => (
-                  <div 
+                  <div
                     key={pastVisit.id}
                     className="relative border-l-2 border-slate-200 pl-4 ml-2 pb-2 space-y-1.5"
                   >
@@ -796,13 +796,12 @@ export default function VisitWorkspace() {
 
               {/* Invoice Status Pill */}
               <div className="flex items-center gap-2">
-                <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                  invoiceStatus === 'Issued'
+                <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${invoiceStatus === 'Issued'
                     ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                     : invoiceStatus === 'Void'
-                    ? 'bg-red-100 text-red-800 border border-red-300'
-                    : 'bg-slate-100 text-slate-600 border border-slate-200'
-                }`}>
+                      ? 'bg-red-100 text-red-800 border border-red-300'
+                      : 'bg-slate-100 text-slate-600 border border-slate-200'
+                  }`}>
                   {invoiceStatus}
                 </span>
 
@@ -848,8 +847,8 @@ export default function VisitWorkspace() {
 
               <div className="space-y-3">
                 {invoiceItems.map((item) => (
-                  <div 
-                    key={item.id} 
+                  <div
+                    key={item.id}
                     className="flex flex-col md:flex-row gap-3 mb-3 p-3 md:p-0 bg-slate-50 md:bg-transparent rounded-lg border border-slate-200 md:border-transparent relative"
                   >
                     {/* 1. Search Input (Full width on mobile) */}
@@ -1270,8 +1269,8 @@ export default function VisitWorkspace() {
               {/* Dynamic Rows */}
               <div className="space-y-4">
                 {prescriptionRows.map((row, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="flex flex-col gap-3 p-4 border border-slate-200 rounded-lg bg-slate-50 transition-colors"
                   >
                     {/* Top Row (Preset & Delete) */}

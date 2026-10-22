@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { 
-  Stethoscope, 
-  HeartHandshake, 
-  Lock, 
-  User, 
-  ArrowRight, 
-  ShieldCheck, 
-  Clock, 
-  Phone, 
+import {
+  Stethoscope,
+  HeartHandshake,
+  Lock,
+  User,
+  ArrowRight,
+  ShieldCheck,
+  Clock,
+  Phone,
   Sparkles
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
