@@ -1,0 +1,94 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  :root {
+    --color-primary-dark: #2A4343;
+    --color-secondary-teal: #416B66;
+    --color-muted-gray: #646756;
+    --color-accent-orange: #D35E36;
+    --color-bg-sand: #F1D49A;
+    --color-bg-sage: #C0C29D;
+  }
+
+  body {
+    background-color: #f7f8f4;
+    color: #2A4343;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f2ec;
+}
+::-webkit-scrollbar-thumb {
+  background: #C0C29D;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #416B66;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    margin: 10mm;
+    size: auto;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide UI elements that shouldn't appear on paper */
+  .no-print,
+  nav,
+  aside,
+  header,
+  .print-hide {
+    display: none !important;
+  }
+
+  /* Ensure print document is visible and fills container */
+  .print-only {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .print-card {
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+    break-inside: avoid;
+  }
+}
